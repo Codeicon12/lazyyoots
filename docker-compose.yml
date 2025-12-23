@@ -1,0 +1,15 @@
+version: '3.8'  
+  
+services:  
+  app:  
+    build: .  
+    ports:  
+      - "${PORT:-3000}:3000"  
+    environment:  
+      - NODE_ENV=production  
+      - PORT=3000  
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-here-make-it-long-and-random}  
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}  
+    volumes:  
+      - ./backend/uploads:/app/backend/uploads  
+    restart: unless-stopped 

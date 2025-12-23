@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lazy Yoots Admin</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --red: #e10600;
+  --soft-red: rgba(225, 6, 0, 0.15);
+  --black: #111;
+  --gray: #777;
+  --border: #eee;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #fff;
+  color: var(--black);
+  overflow-x: hidden;
+  transition: 0.3s;
+}
+
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(120deg, #fff, var(--soft-red), #fff);
+  background-size: 400% 400%;
+  animation: bgMove 16s ease infinite;
+}
+
+@keyframes bgMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.cursor-blob {
+  position: fixed;
+  width: 260px;
+  height: 260px;
+  background: rgba(225, 6, 0, 0.18);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: -1;
+  transition: transform 0.15s linear;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.logo img {
+  height: 50px;
+  cursor: pointer;
+}
+
+nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: var(--black);
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: var(--red);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 30px;
+}
+
+.form-card,
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  transition: 0.3s;
+  backdrop-filter: blur(8px);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.price {
+  color: var(--red);
+  font-weight: 600;
+}
+
+button {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 6px;
+  box-shadow: 0 12px 30px rgba(225, 6, 0, 0.3);
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Redesigned product grid and form styles */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  border-radius: 20px 20px 0 0;
+}
+
+.card h3 {
+  margin: 10px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.card .price {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.card button {
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.form-card {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-card input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.form-card button {
+  font-size: 16px;
+  padding: 12px;
+}
+
+body.dark {
+  background: #0f0f0f;
+  color: #fff;
+}
+
+body.dark header,
+body.dark .card,
+body.dark .form-card {
+  background: rgba(20, 20, 20, 0.85);
+  color: #fff;
+  border-color: #222;
+}
+
+body.dark nav a {
+  color: #ddd;
+}
+
+.login-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-content {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.login-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--red);
+}
+
+.login-content input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.login-content button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.logout-btn {
+  background: #666;
+  margin-left: 10px;
+}
+
+.logout-btn:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+</style>
+</head>
+
+<body>
+<div class="animated-bg"></div>
+<div class="cursor-blob" id="blob"></div>
+
+<header>
+  <div class="logo">
+    <img src="WhatsApp Image 2025-12-20 at 16.25.10 (1).jpeg" alt="Lazy Yoots Logo">
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="#" onclick="toggleDark()">
+      <img src="night-mode.png" alt="Dark Mode" style="height:28px; width:28px; cursor:pointer;">
+    </a>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="admin-grid">
+
+    <div class="form-card">
+      <h3 id="formTitle">Add Product</h3>
+      <input id="pName" placeholder="Name"><br><br>
+      <input id="pPrice" type="number" placeholder="Price"><br><br>
+      <input id="pImage" type="file" accept="image/*"><br>
+      <img id="imagePreview" style="display:none; width:100px; height:100px; margin-top:10px;" alt="Image Preview"><br><br>
+      <input id="pCategory" placeholder="Category"><br>
+      <textarea id="pDescription" placeholder="Description" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid var(--border); border-radius:10px; font-size:14px;"></textarea><br>
+      <input id="pStock" type="number" placeholder="Stock" value="0"><br>
+      <button onclick="handleProductAction()">Add</button>
+    </div>
+
+    <div class="products-grid" id="productGrid"></div>
+
+  </div>
+</div>
+
+<div class="login-modal" id="loginModal">
+  <div class="login-content">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<footer>© 2025 Lazy Yoots — Admin Panel</footer>
+
+<script>
+// Use environment variable for API base URL, fallback to localhost for development
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? "http://localhost:3000/api"
+  : "https://your-backend-url.railway.app/api"; // Replace with your actual backend URL after deployment
+
+let authToken = localStorage.getItem('authToken');
+let products = []; // Store products globally
+
+// Show login modal if not authenticated
+if (!authToken) {
+  document.getElementById('loginModal').style.display = 'flex';
+}
+
+document.addEventListener("mousemove", e => {
+  document.getElementById("blob").style.transform = `translate(${e.clientX - 130}px, ${e.clientY - 130}px)`;
+});
+
+function toggleDark() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+// Login function
+async function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  if (!username || !password) {
+    alert('Please enter both username and password');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      authToken = data.token;
+      localStorage.setItem('authToken', authToken);
+      document.getElementById('loginModal').style.display = 'none';
+      load(); // Load products after successful login
+    } else {
+      alert(data.error || 'Login failed');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('An error occurred during login. Please check the console for details.');
+  }
+}
+
+// Logout function
+function logout() {
+  authToken = null;
+  localStorage.removeItem('authToken');
+  document.getElementById('loginModal').style.display = 'flex';
+}
+
+// Add client-side validation
+function validateForm() {
+  if (!pName.value || !pPrice.value || !pCategory.value) {
+    alert("Please fill in all required fields (Name, Price, Category).");
+    return false;
+  }
+  // For updates, image is optional
+  if (!editingProductId && !pImage.files[0]) {
+    alert("Please upload an image.");
+    return false;
+  }
+  return true;
+}
+
+function handleProductAction() {
+  if (editingProductId) {
+    updateProduct();
+  } else {
+    addProduct();
+  }
+}
+
+// Add image preview functionality
+pImage.addEventListener("change", () => {
+  const file = pImage.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const preview = document.getElementById("imagePreview");
+      preview.src = reader.result;
+      preview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+async function addProduct() {
+  if (!validateForm() || editingProductId) return; // Don't allow adding when editing
+
+  if (!authToken) {
+    alert('Please log in first');
+    document.getElementById('loginModal').style.display = 'flex';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", pName.value);
+  formData.append("price", pPrice.value);
+  formData.append("image", pImage.files[0]);
+  formData.append("category", pCategory.value);
+  formData.append("description", pDescription.value);
+  formData.append("stock", pStock.value);
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/products`, {
+      method: "POST",
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to add product:", errorData);
+      alert(errorData.error || "Failed to add product. Please check the console for details.");
+      return;
+    }
+
+    console.log("Product added successfully");
+    resetForm();
+    load();
+  } catch (error) {
+    console.error("Error adding product:", error);
+    alert("An error occurred while adding the product. Please check the console for details.");
+  }
+}
+
+async function load() {
+  if (!authToken) {
+    document.getElementById('loginModal').style.display = 'flex';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/products`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+    
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        alert('Session expired. Please log in again.');
+        logout();
+        return;
+      }
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    products = await res.json();
+    const grid = document.getElementById("productGrid");
+    grid.innerHTML = "";
+    products.forEach(p => {
+      grid.innerHTML += `
+      <div class="card">
+        <img src="${p.image_url}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="price">₦${p.price}</div>
+        <p>Stock: ${p.stock}</p>
+        <button onclick="editProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.price}', '${p.category.replace(/'/g, "\\'")}', '${p.image_url}', '${p.description.replace(/'/g, "\\'")}', '${p.stock}')">Edit</button>
+        <button onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>`;
+    });
+  } catch (error) {
+    console.error("Error loading products:", error);
+    if (error.message.includes('401') || error.message.includes('403')) {
+      alert('Session expired. Please log in again.');
+      logout();
+    } else {
+      alert("An error occurred while loading products. Please check the console for details.");
+    }
+  }
+}
+
+let editingProductId = null;
+
+function editProduct(id, name, price, category, imageUrl, description, stock) {
+  editingProductId = id;
+  document.getElementById("formTitle").textContent = "Update Product";
+  document.getElementById("pName").value = name;
+  document.getElementById("pPrice").value = price;
+  document.getElementById("pCategory").value = category;
+  document.getElementById("pDescription").value = description || "";
+  document.getElementById("pStock").value = stock || 0;
+  // For editing, we'll show the current image but allow upload of a new one
+  document.getElementById("imagePreview").src = imageUrl;
+  document.getElementById("imagePreview").style.display = "block";
+  document.querySelector("button[onclick='handleProductAction()']").textContent = "Update Product";
+}
+
+async function updateProduct() {
+  if (!validateForm() && editingProductId) return;
+
+  if (!authToken) {
+    alert('Please log in first');
+    document.getElementById('loginModal').style.display = 'flex';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", pName.value);
+  formData.append("price", pPrice.value);
+  if(pImage.files[0]) {
+    formData.append("image", pImage.files[0]);
+  }
+  formData.append("category", pCategory.value);
+  formData.append("description", pDescription.value);
+  formData.append("stock", pStock.value);
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/products/${editingProductId}`, {
+      method: "PUT",
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to update product:", errorData);
+      alert(errorData.error || "Failed to update product. Please check the console for details.");
+      return;
+    }
+
+    console.log("Product updated successfully");
+    resetForm();
+    load(); // Reload the product list
+  } catch (error) {
+    console.error("Error updating product:", error);
+    alert("An error occurred while updating the product. Please check the console for details.");
+  }
+}
+
+function resetForm() {
+  pName.value = pPrice.value = pCategory.value = pDescription.value = pStock.value = "";
+  pImage.value = null;
+  document.getElementById("imagePreview").style.display = "none";
+  document.getElementById("formTitle").textContent = "Add Product";
+  document.querySelector("button[onclick='handleProductAction()']").textContent = "Add";
+  editingProductId = null;
+}
+
+async function deleteProduct(id) {
+  if (!confirm("Are you sure you want to delete this product?")) return;
+
+  if (!authToken) {
+    alert('Please log in first');
+    document.getElementById('loginModal').style.display = 'flex';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        alert('Session expired. Please log in again.');
+        logout();
+        return;
+      }
+      const errorData = await response.json();
+      console.error("Failed to delete product:", errorData);
+      alert(errorData.error || "Failed to delete product. Please check the console for details.");
+      return;
+    }
+
+    console.log("Product deleted successfully");
+    load(); // Reload the product list
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    alert("An error occurred while deleting the product. Please check the console for details.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", load);
+</script>
+</body>
+</html>
