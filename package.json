@@ -1,0 +1,25 @@
+{
+  "name": "lazy-yoots",
+  "version": "1.0.0",
+  "description": "A full-stack e-commerce application with admin panel",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "sanitize-html": "^2.13.0",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": ["ecommerce", "express", "nodejs", "sqlite"],
+  "author": "lazy-yoots",
+  "license": "MIT"
+}
